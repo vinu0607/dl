@@ -1,25 +1,25 @@
 import tensorflow as tf
-# Step 1: Create tensors with different shapes and data types
+
 tensor_float32 = tf.constant([[1.5, 2.5], [3.5, 4.5]], dtype=tf.float32)
 tensor_int32 = tf.constant([[1, 2], [3, 4]], dtype=tf.int32)
-# Convert tensor_int32 to float32 to avoid type mismatch
+
 tensor_int32 = tf.cast(tensor_int32, tf.float32)
-# Step 2: Perform basic operations on tensors
+
 tensor_add = tensor_float32 + tensor_int32
 tensor_sub = tensor_float32 - tensor_int32
 tensor_mul = tensor_float32 * tensor_int32
 tensor_div = tensor_float32 / tensor_int32
-# Step 3: Reshape, slice, and index tensors
+
 reshaped_tensor = tf.reshape(tensor_float32, (1, 4))
 slice_tensor = tensor_float32[0, 1]
 section_tensor = tensor_float32[:, 1]
-# Step 4: Perform matrix multiplication
+
 matrix_a = tf.constant([[1, 2], [3, 4]], dtype=tf.float32)
 matrix_b = tf.constant([[5, 6], [7, 8]], dtype=tf.float32)
 matrix_multiply = tf.matmul(matrix_a, matrix_b)
-# Step 5: Find eigenvectors and eigenvalues
+
 eigenvalues, eigenvectors = tf.linalg.eigh(matrix_a)
-# Print results
+
 print("Addition:\n", tensor_add.numpy())
 print("Subtraction:\n", tensor_sub.numpy())
 print("Multiplication:\n", tensor_mul.numpy())
