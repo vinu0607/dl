@@ -16,7 +16,7 @@ x = np.expand_dims(x, axis=0)
 x = preprocess_input(x)
 feature = model_new.predict(x)
 return feature
-# Dummy Word Index
+
 tokenizer = tf.keras.preprocessing.text.Tokenizer()
 tokenizer.word_index = {
 'startseq': 1,
@@ -30,7 +30,7 @@ tokenizer.word_index = {
 'endseq': 9
 }
 vocab_size = len(tokenizer.word_index) + 1
-max_length = 10 # Max words in caption
+max_length = 10 
 def define_caption_model():
 inputs1 = Input(shape=(2048,))
 fe1 = Dropout(0.5)(inputs1)
@@ -62,17 +62,17 @@ in_text += ' ' + word
 if word == 'endseq':
 break
 return in_text
-# Load your sample image
+
 img_path = '/content/images/img1.jpg'
-# Extract features from image
+
 photo = extract_features(img_path)
-# Define and Load Caption Model
+
 model = define_caption_model()
-# For demo, weights are not trained — so we use dummy caption
+
 caption = "startseq a man is riding horse on beach endseq"
 print("Predicted Caption:")
 print(caption)
-# Display Image
+
 img = image.load_img(img_path)
 plt.imshow(img)
 plt.axis('off')
