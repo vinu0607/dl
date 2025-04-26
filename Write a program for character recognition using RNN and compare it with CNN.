@@ -1,7 +1,7 @@
 import tensorflow as tf
 import tensorflow_datasets as tfds
 import matplotlib.pyplot as plt
-# Load EMNIST Dataset (letters)
+
 (ds_train, ds_test), ds_info = tfds.load(
 'emnist/letters',
 split=['train', 'test'],
