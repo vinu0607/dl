@@ -6,15 +6,15 @@ from sklearn.preprocessing import MinMaxScaler
 import tensorflow as tf
 from tensorflow.keras.models import Sequential
 from tensorflow.keras.layers import SimpleRNN, Dense
-# Download Google Stock Price Data
+
 df = yf.download('GOOG', start='2015-01-01', end='2023-12-31')
 df.head()
-# Use 'Close' Price for prediction
+
 data = df['Close'].values.reshape(-1, 1)
-# Normalize the data
+
 scaler = MinMaxScaler(feature_range=(0, 1))
 data_scaled = scaler.fit_transform(data)
-# Create Sequences
+
 def create_dataset(dataset, time_step=60):
 X, Y = [], []
 for i in range(len(dataset) - time_step - 1):
@@ -23,9 +23,9 @@ Y.append(dataset[i+time_step, 0])
 return np.array(X), np.array(Y)
 time_step = 60
 X, y = create_dataset(data_scaled, time_step)
-# Reshape for RNN Input (samples, timesteps, features)
+
 X = X.reshape(X.shape[0], X.shape[1], 1)
-# Split into Training and Testing
+
 train_size = int(len(X) * 0.7)
 X_train, X_test = X[:train_size], X[train_size:]
 y_train, y_test = y[:train_size], y[train_size:]
@@ -36,14 +36,14 @@ model.compile(optimizer='adam', loss='mean_squared_error')
 model.summary()
 history = model.fit(X_train, y_train, validation_data=(X_test, y_test), epochs=50, batch_size=32,
 verbose=1)
-# Predict Stock Prices
+
 train_predict = model.predict(X_train)
 test_predict = model.predict(X_test)
-# Inverse Transform to get actual values
+
 train_predict = scaler.inverse_transform(train_predict)
 test_predict = scaler.inverse_transform(test_predict)
 real_y_test = scaler.inverse_transform(y_test.reshape(-1, 1))
-# Plotting
+
 plt.figure(figsize=(10,6))
 plt.plot(df['Close'].index[train_size+time_step+1:], real_y_test, label="Actual Google Stock Price")
 plt.plot(df['Close'].index[train_size+time_step+1:], test_predict, label="Predicted Stock Price")
