@@ -1,0 +1,79 @@
+import tensorflow as tf
+from tensorflow.keras.applications.inception_v3 import InceptionV3, preprocess_input
+from tensorflow.keras.preprocessing import image
+from tensorflow.keras.preprocessing.sequence import pad_sequences
+from tensorflow.keras.models import Model, load_model
+from tensorflow.keras.layers import Input, Dense, LSTM, Embedding, Dropout, add
+import numpy as np
+import matplotlib.pyplot as plt
+import os
+def extract_features(img_path):
+model = InceptionV3(weights='imagenet')
+model_new = Model(model.input, model.layers[-2].output)
+img = image.load_img(img_path, target_size=(299, 299))
+x = image.img_to_array(img)
+x = np.expand_dims(x, axis=0)
+x = preprocess_input(x)
+feature = model_new.predict(x)
+return feature
+# Dummy Word Index
+tokenizer = tf.keras.preprocessing.text.Tokenizer()
+tokenizer.word_index = {
+'startseq': 1,
+'a': 2,
+'man': 3,
+'is': 4,
+'riding': 5,
+'horse': 6,
+'on': 7,
+'beach': 8,
+'endseq': 9
+}
+vocab_size = len(tokenizer.word_index) + 1
+max_length = 10 # Max words in caption
+def define_caption_model():
+inputs1 = Input(shape=(2048,))
+fe1 = Dropout(0.5)(inputs1)
+fe2 = Dense(256, activation='relu')(fe1)
+inputs2 = Input(shape=(max_length,))
+se1 = Embedding(vocab_size, 256, mask_zero=True)(inputs2)
+se2 = Dropout(0.5)(se1)
+se3 = LSTM(256)(se2)
+decoder1 = add([fe2, se3])
+decoder2 = Dense(256, activation='relu')(decoder1)
+outputs = Dense(vocab_size, activation='softmax')(decoder2)
+model = Model(inputs=[inputs1, inputs2], outputs=outputs)
+return model
+def generate_caption(model, photo, tokenizer, max_length):
+in_text = 'startseq'
+for _ in range(max_length):
+sequence = tokenizer.texts_to_sequences([in_text])[0]
+sequence = pad_sequences([sequence], maxlen=max_length)
+yhat = model.predict([photo, sequence], verbose=0)
+yhat = np.argmax(yhat)
+word = None
+for w, index in tokenizer.word_index.items():
+if index == yhat:
+word = w
+break
+if word is None:
+break
+in_text += ' ' + word
+if word == 'endseq':
+break
+return in_text
+# Load your sample image
+img_path = '/content/images/img1.jpg'
+# Extract features from image
+photo = extract_features(img_path)
+# Define and Load Caption Model
+model = define_caption_model()
+# For demo, weights are not trained — so we use dummy caption
+caption = "startseq a man is riding horse on beach endseq"
+print("Predicted Caption:")
+print(caption)
+# Display Image
+img = image.load_img(img_path)
+plt.imshow(img)
+plt.axis('off')
+plt.show()
