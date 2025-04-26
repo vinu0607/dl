@@ -1,20 +1,20 @@
 import tensorflow as tf
 from tensorflow.keras import layers, models
 import numpy as np
-# Generate synthetic data for demonstration (replace with your real-world data)
+
 data = np.random.rand(1000, 32, 32, 3) # Example data: 1000 images of size 32x32 with 3 color
 channels
-# Normalize the data
+
 data = data.astype('float32') / 255.0
-# Define the autoencoder model
+
 def autoencoder_model(input_shape):
 input_img = layers.Input(shape=input_shape)
-# Encoder
+
 x = layers.Conv2D(32, (3, 3), activation='relu', padding='same')(input_img)
 x = layers.MaxPooling2D((2, 2), padding='same')(x)
 x = layers.Conv2D(64, (3, 3), activation='relu', padding='same')(x)
 encoded = layers.MaxPooling2D((2, 2), padding='same')(x)
-# Decoder
+
 x = layers.Conv2D(64, (3, 3), activation='relu', padding='same')(encoded)
 x = layers.UpSampling2D((2, 2))(x)
 x = layers.UpSampling2D((2, 2))(x)
@@ -22,9 +22,9 @@ decoded = layers.Conv2D(3, (3, 3), activation='sigmoid', padding='same')(x)
 autoencoder = models.Model(input_img, decoded)
 autoencoder.compile(optimizer='adam', loss='binary_crossentropy')
 return autoencoder
-# Create the autoencoder model
+
 autoencoder = autoencoder_model((32, 32, 3))
-# Summary of the model
+
 autoencoder.summary()
-# Train the autoencoder
+
 autoencoder.fit(data, data, epochs=50, batch_size=32, shuffle=True, validation_split=0.2)
